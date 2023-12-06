@@ -1,0 +1,1 @@
+nodemon --exec babel-node src/day$1/main.js
