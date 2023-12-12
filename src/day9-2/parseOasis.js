@@ -32,15 +32,15 @@ const getExtrapolatedValue = (history) => {
   for (let i = 0; i < reversedHistories.length; i++) {
     const h = reversedHistories[i];
 
-    const neighbourNumber = i === 0 ? 0 : h.at(-1);
-    const belowNumber = i === 0 ? 0 : reversedHistories[i - 1].at(-1);
+    const neighbourNumber = i === 0 ? 0 : h.at(0);
+    const belowNumber = i === 0 ? 0 : reversedHistories[i - 1].at(0);
 
-    const val = belowNumber + neighbourNumber;
+    const val = neighbourNumber - belowNumber;
 
-    h.push(val);
+    h.unshift(val);
   }
 
-  return reversedHistories.at(-1).at(-1);
+  return reversedHistories.at(-1).at(0);
 };
 
 export const parseOasis = (matrix) => matrix.map(getExtrapolatedValue);
