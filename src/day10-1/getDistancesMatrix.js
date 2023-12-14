@@ -162,11 +162,8 @@ const executeFire = (matrix, x, y) => {
 const fire = (matrix, x, y) => {
   const tilesToFire = [{ x, y }];
   for (let i = 0; i < tilesToFire.length; i++) {
-    // console.log(tilesToFire.length);
     const tile = tilesToFire[i];
     const tiles = executeFire(matrix, tile.x, tile.y);
-    // console.log({ tiles });
-    // process.exit(1);
 
     tilesToFire.push(...tiles);
   }
