@@ -1,4 +1,3 @@
-import fs from "fs";
 import { Cells, Directions } from "./constants";
 import { isInside } from "./isInside";
 

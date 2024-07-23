@@ -133,7 +133,9 @@ export class PulseMachine {
     return false;
   }
 
+  // eslint-disable-next-line consistent-return
   processPulses() {
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       this.count++;
       const ok = this.processPulse();
