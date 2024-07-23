@@ -1,4 +1,9 @@
-import { CONJUCTION_PREFIX, FLIP_FLOP_PREFIX } from "./constants";
+import { lcm } from "~/day20-2/utils";
+import {
+  CONJUCTION_PREFIX,
+  FLIP_FLOP_PREFIX,
+  RESET_MACHINE_NAME,
+} from "./constants";
 
 export class PulseMachine {
   flipFlops = new Map();
@@ -11,9 +16,11 @@ export class PulseMachine {
 
   pulses = [];
 
-  lowCount = 0;
+  count = 0;
 
-  highCount = 0;
+  ansestors = [];
+
+  ansestorsMap = new Map();
 
   constructor({ flipFlops, conjunctions, broadcast }) {
     for (const flipFlop of flipFlops) {
@@ -21,6 +28,7 @@ export class PulseMachine {
         groups: flipFlop.groups,
         enabled: false,
       });
+
       this.modules.set(flipFlop.name, FLIP_FLOP_PREFIX);
     }
 
@@ -48,6 +56,15 @@ export class PulseMachine {
     }
 
     this.broadcast = broadcast;
+
+    const firstLevelAncestor = [...this.conjunctions.entries()].find(([, v]) =>
+      v.groups.some((x) => x === RESET_MACHINE_NAME),
+    )[0];
+
+    // harcoded for conjunctions
+    this.ansestors = [...this.conjunctions.entries()]
+      .filter(([, v]) => v.groups.some((x) => x === firstLevelAncestor))
+      .map(([k]) => k);
   }
 
   processFlipFlop(name, _high) {
@@ -66,6 +83,13 @@ export class PulseMachine {
 
     const high = [...c.inputs.values()].some((i) => !i);
 
+    if (high && this.ansestors.includes(name)) {
+      const has = this.ansestorsMap.has(name);
+      if (!has) {
+        this.ansestorsMap.set(name, this.count);
+      }
+    }
+
     return c.groups.map((group) => ({ name: group, high, from: name }));
   }
 
@@ -79,7 +103,6 @@ export class PulseMachine {
   }
 
   processPulse() {
-    this.lowCount++;
     const initialPulses = this.broadcast.map((name) => ({
       name,
       high: false,
@@ -91,7 +114,9 @@ export class PulseMachine {
     while (this.pulses.length) {
       const pulse = this.pulses.shift();
 
-      this.incrementCount(pulse.high);
+      if (pulse.name === RESET_MACHINE_NAME && !pulse.high) {
+        return true;
+      }
 
       const type = this.modules.get(pulse.name);
 
@@ -104,23 +129,19 @@ export class PulseMachine {
         this.pushPulses(newPulses);
       }
     }
+
+    return false;
   }
 
-  processPulses(times) {
-    for (let i = 0; i < times; i++) {
-      this.processPulse();
+  processPulses() {
+    while (true) {
+      this.count++;
+      const ok = this.processPulse();
+      if (ok) break;
+      if (this.ansestorsMap.size === this.ansestors.length) {
+        const counts = [...this.ansestorsMap.values()];
+        return lcm(...counts);
+      }
     }
-  }
-
-  getCounts() {
-    return {
-      lowCount: this.lowCount,
-      highCount: this.highCount,
-    };
-  }
-
-  incrementCount(high) {
-    if (high) this.highCount++;
-    else this.lowCount++;
   }
 }
