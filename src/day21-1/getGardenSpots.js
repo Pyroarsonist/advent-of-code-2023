@@ -1,4 +1,4 @@
-import { GARDEN, START, STEPS_COUNT } from "~/day21-1/constants";
+import { GARDEN, START, STEPS_COUNT } from "./constants";
 
 const countStarts = (matrix) => {
   let count = 0;

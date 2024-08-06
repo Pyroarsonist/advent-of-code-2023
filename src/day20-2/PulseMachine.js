@@ -1,4 +1,4 @@
-import { lcm } from "~/day20-2/utils";
+import { lcm } from "./utils";
 import {
   CONJUCTION_PREFIX,
   FLIP_FLOP_PREFIX,
