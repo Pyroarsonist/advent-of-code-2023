@@ -1,0 +1,1 @@
+https://adventofcode.com/2023/day/24#part2
